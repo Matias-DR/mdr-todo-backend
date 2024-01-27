@@ -1,5 +1,7 @@
 # Custom
 notes.txt
+_use_cases.py
+_views.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
