@@ -1,5 +1,21 @@
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 from django.db import models
+
+
+class User(AbstractUser):
+    '''
+        Entity/Model for the users
+
+        Attributes:
+            email (str): User's email.
+            first_name (str): User's first name.
+            last_name (str): User's last name.
+            password (str): User's password.
+            username (str): User's username.
+    '''
+
+    def __str__(self):
+        return f'Username: {self.username}\n'
 
 
 class Task(models.Model):
