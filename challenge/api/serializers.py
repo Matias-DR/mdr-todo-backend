@@ -3,6 +3,7 @@ from .models import (
     User,
     Task
 )
+from django.contrib.auth.hashers import make_password
 
 
 class UserSerializer(ModelSerializer):
@@ -12,9 +13,17 @@ class UserSerializer(ModelSerializer):
         Attributes:
             username (str): Username of the user.
     '''
+
+    def create(self, validated_data):
+        validated_data['password'] = make_password(validated_data['password'])
+        return super().create(validated_data)
+
     class Meta:
         model = User
-        fields = ['username']
+        fields = [
+            'username',
+            'password'
+        ]
 
 
 class TaskSerializer(ModelSerializer):
