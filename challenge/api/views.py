@@ -28,10 +28,7 @@ class UserViewSet(ModelViewSet):
     serializer_class = UserSerializer
     action_permissions = {
         'retrieve': [IsAuthenticated],
-        'list': [
-            IsAuthenticated,
-            IsAdminUser
-        ],
+        'list': [IsAuthenticated],
         'destroy': [IsAuthenticated],
         'update': [IsAuthenticated],
     }
@@ -40,9 +37,6 @@ class UserViewSet(ModelViewSet):
         '''
             Returns the user's queryset if authenticated and never that of all users.
             Only superusers can get the queryset of all users.
-
-            Returns:
-                queryset (QuerySet): QuerySet of the User model.
         '''
         if not self.request.user.is_superuser:
             return self.queryset.filter(pk=self.request.user.pk)
@@ -63,3 +57,12 @@ class TaskViewSet(ModelViewSet):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        '''
+            Returns the task's queryset if authenticated and never that of all tasks.
+            Only superusers can get the queryset of all task.
+        '''
+        if not self.request.user.is_superuser:
+            return self.queryset.filter(pk=self.request.user.pk)
+        return super().get_queryset()
