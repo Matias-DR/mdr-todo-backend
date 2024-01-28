@@ -67,6 +67,9 @@ class TaskViewSet(ModelViewSet):
             return self.queryset.filter(user=self.request.user.pk)
         return super().get_queryset()
 
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
     def mark_a_task_as_complete(self): ...
 
     def mark_a_task_as_incomplete(self): ...

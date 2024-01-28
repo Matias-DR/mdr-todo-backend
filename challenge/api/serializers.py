@@ -37,4 +37,8 @@ class TaskSerializer(ModelSerializer):
     '''
     class Meta:
         model = Task
-        fields = '__all__'
+        fields = [
+            'completed',
+            'description',
+            'title'
+        ]
