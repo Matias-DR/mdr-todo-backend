@@ -64,5 +64,9 @@ class TaskViewSet(ModelViewSet):
             Only superusers can get the queryset of all task.
         '''
         if not self.request.user.is_superuser:
-            return self.queryset.filter(pk=self.request.user.pk)
+            return self.queryset.filter(user=self.request.user.pk)
         return super().get_queryset()
+
+    def mark_a_task_as_complete(self): ...
+
+    def mark_a_task_as_incomplete(self): ...
