@@ -7,14 +7,11 @@ class User(AbstractUser):
         Entity/Model for the users
 
         Attributes:
-            email (str): User's email.
-            first_name (str): User's first name.
-            last_name (str): User's last name.
             password (str): User's password.
             username (str): User's username.
     '''
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'Username: {self.username}\n'
 
 
@@ -27,12 +24,44 @@ class Task(models.Model):
             description (str): User-entered descriptive colloquial text for the task.
             title (str): Title of the task.
             user (django.contrib.auth.models.User): Task owner.
+            created (datetime.datetime): Date and time of task creation.
     '''
 
     completed = models.BooleanField(default=False)
     description = models.TextField()
     title = models.CharField(max_length=100)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    created = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'Title: {self.title}.\nUser: {self.user.__str__()}\n\n'
+
+    def complete(
+        self,
+        save: bool = True
+    ) -> None:
+        '''
+            Marks the task as complete.
+
+            Args:
+                save (bool): Determines if the task is saved in the database.
+        '''
+
+        self.completed = True
+        if (save):
+            self.save()
+
+    def incomplete(
+        self,
+        save: bool = True
+    ) -> None:
+        '''
+            Marks the task as incomplete.
+
+            Args:
+                save (bool): Determines if the task is saved in the database.
+        '''
+
+        self.completed = False
+        if (save):
+            self.save()
