@@ -1,3 +1,5 @@
+import logging
+
 from django.contrib.auth.hashers import make_password
 from rest_framework.serializers import ModelSerializer
 
@@ -5,6 +7,9 @@ from .models import (
     User,
     Task
 )
+
+
+logger = logging.getLogger(__name__)
 
 
 class UserSerializer(ModelSerializer):
@@ -26,6 +31,7 @@ class UserSerializer(ModelSerializer):
                 validated_data (dict): Dictionary with the validated data.
         '''
 
+        logger.info(f'UserSerializer create -> User {validated_data["username"]} created.')
         validated_data['password'] = make_password(validated_data['password'])
         return super().create(validated_data)
 

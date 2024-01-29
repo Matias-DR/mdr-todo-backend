@@ -1,5 +1,10 @@
+import logging
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+
+
+logger = logging.getLogger(__name__)
 
 
 class User(AbstractUser):
@@ -47,6 +52,7 @@ class Task(models.Model):
                 save (bool): Determines if the task is saved in the database.
         '''
 
+        logger.info(f'Task complete -> Task {self.pk} completed.')
         self.completed = True
         if (save):
             self.save()
@@ -62,6 +68,7 @@ class Task(models.Model):
                 save (bool): Determines if the task is saved in the database.
         '''
 
+        logger.info(f'Task incomplete -> Task {self.pk} incomplete.')
         self.completed = False
         if (save):
             self.save()

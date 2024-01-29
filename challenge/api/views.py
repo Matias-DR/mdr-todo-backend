@@ -1,3 +1,5 @@
+import logging
+
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter
@@ -13,6 +15,9 @@ from .serializers import (
     UserSerializer,
     TaskSerializer
 )
+
+
+logger = logging.getLogger(__name__)
 
 
 class UserViewSet(ModelViewSet):
@@ -88,6 +93,7 @@ class TaskViewSet(ModelViewSet):
             Sets the user of the task to the user who created it.
         '''
 
+        logger.info(f'TaskViewSet perform_create -> Task created by {self.request.user.username}')
         serializer.save(user=self.request.user)
 
     @action(
@@ -107,6 +113,7 @@ class TaskViewSet(ModelViewSet):
             It receive the task id, marks as complete and returns the task data.
         '''
 
+        logger.info(f'TaskViewSet complete -> Task {pk} from user {self.request.user.username} completed')
         task = self.get_object()
         serializer = self.get_serializer(task)
         task.complete()
@@ -129,6 +136,7 @@ class TaskViewSet(ModelViewSet):
             It receive the task id, marks as complete and returns the task data.
         '''
 
+        logger.info(f'TaskViewSet incomplete -> Task {pk} from user {self.request.user.username} incomplete')
         task = self.get_object()
         serializer = self.get_serializer(task)
         task.incomplete()
