@@ -38,6 +38,7 @@ class UserSerializer(ModelSerializer):
     class Meta:
         model = User
         fields = [
+            'pk',
             'password',
             'username'
         ]
@@ -56,6 +57,7 @@ class TaskSerializer(ModelSerializer):
     class Meta:
         model = Task
         fields = [
+            'pk',
             'completed',
             'description',
             'title',
