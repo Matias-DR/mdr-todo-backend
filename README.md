@@ -32,30 +32,6 @@
 - 1) Ingrese el comando "docker compose up --build" para construir el ambiente en el que se ejecutará el proyecto
 - 2) Ejecute con el comando "docker compose up" y ya podrá consumir la aplicación
 
-## Instalación Docker
-- 1) Siga los pasos 1 al 4 de la instalación principal.
-- 2) En la misma terminal, ingrese el comando "docker compose up --build" para construir el ambiente en el que se ejecutará el proyecto
-
-## Configuración Docker
-- 1) Dentro de la carpeta "challenge" cree un archivo llamado ".env" y ábralo con un editor de texto.
-- 2) Escriba "SECRET_KEY=<clave_secreta>" donde "<clave_secreta>" debe ser reemplazado por cual fuera la clave secreta que desee para encriptar toda infromación sensible del proyecto.
-- 3) Además, tendrá que definir las siguientes variables, para las que así como a "SECRET_KEY" tendrá que asignar valores:
-    - DEBUG=1
-    - SQL_ENGINE=django.db.backends.postgresql
-    - SQL_DATABASE=todo_challenge
-    - SQL_USER=todo_challenge
-    - SQL_PASSWORD=todo_challenge
-    - SQL_HOST=db
-    - SQL_PORT=5432
-    - DJANGO_SUPERUSER_PASSWORD=<contraseña_superusuario>
-    - DEFAULT_ADMIN_PASSWORD=<contraseña_superusuario>
-    - DEFAULT_ADMIN_EMAIL=<email_superusuario>
-    - DEFAULT_ADMIN_USERNAME=<nombre_superusuario>
-- 4) Guarde el archivo y ciérrelo
-
-## Ejecución Docker
-- 1) Sobre la misma terminal utilizada para la instalación opcional, ingrese el comando "docker compose up" y ya estará listo
-
 ## Utilización / Pruebas
 Una vez ejecutado el proyecto, puede realizar peticiones HTTP a los siguientes enlaces para cada una de las acciones indicadas.
 Lo que verá a continuación son comandos en terminales UNIX y/o PowerShell que generarán esas solicitudes HTTP y puede ingresarlos en una terminal para probarlos.
