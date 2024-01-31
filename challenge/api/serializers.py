@@ -59,4 +59,5 @@ class TaskSerializer(ModelSerializer):
             'completed',
             'description',
             'title',
+            'created'
         ]
