@@ -9,7 +9,7 @@
 - 1) Abra una terminal e ingrese "mkdir <nombre_carpeta>" (para terminales en UNIX y PowerShell en Windows >=10) para crear la carpeta del proyecto
 - 2) Párese sobre la carpeta creada con "cd <nombre_carpeta>" donde instalará el proyecto
 - 3) Clone el repositorio ingresando "git clone mdr-todo-challenge https://github.com/Matias-DR/mdr-todo-challenge"
-- 4) Párese sobre el proyecto con "cd ./todo-challenge/challenge"
+- 4) Párese sobre el proyecto con "cd ./mdr-todo-challenge/challenge"
 
 ## Configuración
 - 1) Dentro de la carpeta "challenge" cree un archivo llamado ".env" y ábralo con un editor de texto.
@@ -60,8 +60,6 @@
 Una vez ejecutado el proyecto, puede realizar peticiones HTTP a los siguientes enlaces para cada una de las acciones indicadas.
 Lo que verá a continuación son comandos en terminales UNIX y/o PowerShell que generarán esas solicitudes HTTP y puede ingresarlos en una terminal para probarlos.
 
-- Usuarios
-
 ### Request
 `POST /api/user/` Crear un usuario
 - UNIX
@@ -91,7 +89,11 @@ Invoke-RestMethod -Uri "http://127.0.0.1:8000/api/token/" -Method Post -Headers 
 ### Response
 ```
     HTTP/1.1 201 OK
-    { refresh: <refresh_token> access: <access_token> }
+    {
+        "pk":2,
+        "password":"<hash>",
+        "username":"test"
+    }
 ```
 
 ### Request
@@ -106,7 +108,7 @@ Invoke-RestMethod -Uri "http://127.0.0.1:8000/api/token/" -Method Post -Headers 
 ```
 ### Response
 ```
-    HTTP/1.1 201 OK
+    HTTP/1.1 200 OK
     { access: <access_token> }
 ```
 
@@ -114,56 +116,60 @@ Invoke-RestMethod -Uri "http://127.0.0.1:8000/api/token/" -Method Post -Headers 
 `GET /api/user/` Obtener los datos del usuario
 - UNIX
 ```
-curl -X PUT -H "Content-Type: application/json" -H "Authorization: Bearer <access_token>" http://127.0.0.1:8000/api/user/
+curl -X PUT -H "Content-Type: application/json" -H "Authorization: Bearer <access_token>" http://127.0.0.1:8000/api/user/<pk>/
 ```
 - PowerShell
 ```
-Invoke-RestMethod -Uri "http://127.0.0.1:8000/api/user/" -Method Put -Headers @{
+Invoke-RestMethod -Uri "http://127.0.0.1:8000/api/user/<pk>/" -Method Put -Headers @{
     "Content-Type" = "application/json"
     "Authorization" = "Bearer <access_token>"
 }
 ```
 ### Response
 ```
-    HTTP/1.1 201 OK
-    { access: <access_token> }
+    HTTP/1.1 200 OK
+    {
+        "pk":2,
+        "password":"<hash>",
+        "username":"test"
+    }
 ```
 
 ### Request
 `PUT/PATCH /api/user/` Cambiar los datos del usuario
 - UNIX
 ```
-curl -X PUT -H "Content-Type: application/json" -d '{"username":"<username>","password":"password"}' http://127.0.0.1:8000/api/user/
+curl -X PUT -H "Content-Type: application/json" -d '{"username":"test2","password":"test2"}' http://127.0.0.1:8000/api/user/<pk>/
 ```
 - PowerShell
 ```
-Invoke-RestMethod -Uri "http://127.0.0.1:8000/api/user/" -Method Put -Headers @{ "Content-Type" = "application/json" } -Body '{"username":"<username>","password":"password"}'
+Invoke-RestMethod -Uri "http://127.0.0.1:8000/api/user/<pk>/" -Method Put -Headers @{ "Content-Type" = "application/json" } -Body '{"username":"test2","password":"test2"}'
 ```
 ### Response
 ```
-    HTTP/1.1 201 OK
-    { access: <access_token> }
+    HTTP/1.1 200 OK
+    {
+        "password": "test2",
+        "username": "test2"
+    }
 ```
 
 ### Request
 `DELETE /api/user/` Eliminar el usuario
 - UNIX
 ```
-curl -X PUT -H "Content-Type: application/json" -H "Authorization: Bearer <access_token>" http://127.0.0.1:8000/api/user/
+curl -X DELETE -H "Authorization: Bearer <access_token>" http://127.0.0.1:8000/api/user/<pk>/
 ```
 - PowerShell
 ```
-Invoke-RestMethod -Uri "http://127.0.0.1:8000/api/user/" -Method Put -Headers @{
-    "Content-Type" = "application/json"
+Invoke-RestMethod -Uri "http://127.0.0.1:8000/api/user/<pk>/" -Method Delete -Headers @{
     "Authorization" = "Bearer <access_token>"
-} -Body '{"username":"<username>","password":"password"}'
+}
 ```
 ### Response
 ```
-    HTTP/1.1 201 OK
+    HTTP/1.1 204 No Content
 ```
-
-- Tareas
 
 ### Request
 `POST /api/task/` Crear un una tarea (requiere token)
