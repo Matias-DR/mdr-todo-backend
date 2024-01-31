@@ -36,7 +36,7 @@ class Task(models.Model):
     description = models.TextField()
     title = models.CharField(max_length=100)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    created = models.DateTimeField(auto_now_add=True)
+    created = models.DateField(auto_now_add=True)
 
     def __str__(self) -> str:
         return f'Title: {self.title}.\nUser: {self.user.__str__()}\n\n'
