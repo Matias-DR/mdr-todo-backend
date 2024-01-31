@@ -1,37 +1,360 @@
-# Invera ToDo-List Challenge (Python/Django Jr-SSr)
+# ToDo-List Challenge - Instrucciones de uso
 
-El propósito de esta prueba es conocer tu capacidad para crear una pequeña aplicación funcional en un límite de tiempo. A continuación, encontrarás las funciones, los requisitos y los puntos clave que debés tener en cuenta durante el desarrollo.
+## Requisitos
+- [Python 3.12.X](https://www.python.org/downloads/)
+- [Git 2.39.X](https://git-scm.com/downloads)
+- [Docker](https://www.docker.com/)
 
-## Qué queremos que hagas:
+## Instalación
+- 1) Abra una terminal e ingrese "mkdir <nombre_carpeta>" (para terminales en UNIX y PowerShell en Windows >=10) para crear la carpeta del proyecto
+- 2) Párese sobre la carpeta creada con "cd <nombre_carpeta>" donde instalará el proyecto
+- 3) Clone el repositorio ingresando "git clone mdr-todo-challenge https://github.com/Matias-DR/mdr-todo-challenge"
+- 4) Párese sobre el proyecto con "cd ./todo-challenge/challenge"
 
-- El Challenge consiste en crear una aplicación web sencilla que permita a los usuarios crear y mantener una lista de tareas.
-- La entrega del resultado será en un nuevo fork de este repo y deberás hacer una pequeña demo del funcionamiento y desarrollo del proyecto ante un super comité de las más grandes mentes maestras de Invera, o a un par de devs, lo que sea más fácil de conseguir.
-- Podes contactarnos en caso que tengas alguna consulta.
+## Configuración
+- 1) Dentro de la carpeta "challenge" cree un archivo llamado ".env" y ábralo con un editor de texto.
+- 2) Escriba "SECRET_KEY=clave_secreta" donde "clave_secreta" debe ser reemplazado por cual fuera la clave secreta que desee para encriptar toda infromación sensible del proyecto.
+- 3) Además, tendrá que definir las siguientes variables, para las que así como a "SECRET_KEY" tendrá que asignar valores:
+    - DEBUG=1
+    - SQL_ENGINE=django.db.backends.postgresql
+    - SQL_DATABASE=todo_challenge
+    - SQL_USER=todo_challenge
+    - SQL_PASSWORD=todo_challenge
+    - SQL_HOST=db
+    - SQL_PORT=5432
+    - DJANGO_SUPERUSER_PASSWORD=<contraseña_superusuario>
+    - DEFAULT_ADMIN_PASSWORD=<contraseña_superusuario>
+    - DEFAULT_ADMIN_EMAIL=<email_superusuario>
+    - DEFAULT_ADMIN_USERNAME=<nombre_superusuario>
+- 4) Guarde el archivo y ciérrelo
 
-## Objetivos:
+## Ejecución
+- 1) Ingrese el comando "docker compose up --build" para construir el ambiente en el que se ejecutará el proyecto
+- 2) Ejecute con el comando "docker compose up" y ya podrá consumir la aplicación
 
-El usuario de la aplicación tiene que ser capaz de:
+## Instalación Docker
+- 1) Siga los pasos 1 al 4 de la instalación principal.
+- 2) En la misma terminal, ingrese el comando "docker compose up --build" para construir el ambiente en el que se ejecutará el proyecto
 
-- Autenticarse
-- Crear una tarea
-- Eliminar una tarea
-- Marcar tareas como completadas
-- Poder ver una lista de todas las tareas existentes
-- Filtrar/buscar tareas por fecha de creación y/o por el contenido de la misma
+## Configuración Docker
+- 1) Dentro de la carpeta "challenge" cree un archivo llamado ".env" y ábralo con un editor de texto.
+- 2) Escriba "SECRET_KEY=<clave_secreta>" donde "<clave_secreta>" debe ser reemplazado por cual fuera la clave secreta que desee para encriptar toda infromación sensible del proyecto.
+- 3) Además, tendrá que definir las siguientes variables, para las que así como a "SECRET_KEY" tendrá que asignar valores:
+    - DEBUG=1
+    - SQL_ENGINE=django.db.backends.postgresql
+    - SQL_DATABASE=todo_challenge
+    - SQL_USER=todo_challenge
+    - SQL_PASSWORD=todo_challenge
+    - SQL_HOST=db
+    - SQL_PORT=5432
+    - DJANGO_SUPERUSER_PASSWORD=<contraseña_superusuario>
+    - DEFAULT_ADMIN_PASSWORD=<contraseña_superusuario>
+    - DEFAULT_ADMIN_EMAIL=<email_superusuario>
+    - DEFAULT_ADMIN_USERNAME=<nombre_superusuario>
+- 4) Guarde el archivo y ciérrelo
 
-## Qué evaluamos:
+## Ejecución Docker
+- 1) Sobre la misma terminal utilizada para la instalación opcional, ingrese el comando "docker compose up" y ya estará listo
 
-- Desarrollo utilizando Python, Django. No es necesario crear un Front-End, pero sí es necesario tener una API que permita cumplir con los objetivos de arriba.
-- Uso de librerías y paquetes estandares que reduzcan la cantidad de código propio añadido.
-- Calidad y arquitectura de código. Facilidad de lectura y mantenimiento del código. Estándares seguidos.
-- [Bonus] Manejo de logs.
-- [Bonus] Creación de tests (unitarias y de integración)
-- [Bonus] Unificar la solución propuesta en una imagen de Docker por repositorio para poder ser ejecutada en cualquier ambiente (si aplica para full stack).
+## Utilización / Pruebas
+Una vez ejecutado el proyecto, puede realizar peticiones HTTP a los siguientes enlaces para cada una de las acciones indicadas.
+Lo que verá a continuación son comandos en terminales UNIX y/o PowerShell que generarán esas solicitudes HTTP y puede ingresarlos en una terminal para probarlos.
 
-## Requerimientos de entrega:
+- Usuarios
 
-- Hacer un fork del proyecto y pushearlo en github. Puede ser privado.
-- La solución debe correr correctamente.
-- El Readme debe contener todas las instrucciones para poder levantar la aplicación, en caso de ser necesario, y explicar cómo se usa.
-- Disponibilidad para realizar una pequeña demo del proyecto al finalizar el challenge.
-- Tiempo para la entrega: Aproximadamente 7 días.
+### Request
+`POST /api/user/` Crear un usuario
+- UNIX
+```
+curl -X POST -H "Content-Type: application/json" -d '{"username":"test","password":"test"}' http://127.0.0.1:8000/api/user/
+```
+- PowerShell
+```
+Invoke-RestMethod -Uri "http://127.0.0.1:8000/api/user/" -Method Post -Headers @{ "Content-Type" = "application/json" } -Body '{"username":"test","password":"test" }'
+```
+### Response
+```
+    HTTP/1.1 201 OK
+    { username: test, password: ... }
+```
+
+### Request
+`POST /api/token/` Iniciar sesión con credenciales
+- UNIX
+```
+curl -X POST -H "Content-Type: application/json" -d '{"username":"test","password":"test"}' http://127.0.0.1:8000/api/token/
+```
+- PowerShell
+```
+Invoke-RestMethod -Uri "http://127.0.0.1:8000/api/token/" -Method Post -Headers @{ "Content-Type" = "application/json" } -Body '{"username":"test","password":"test"}'
+```
+### Response
+```
+    HTTP/1.1 201 OK
+    { refresh: <refresh_token> access: <access_token> }
+```
+
+### Request
+`POST /api/token/refresh` Actualizar el token access
+- UNIX
+```
+curl -X POST -H "Content-Type: application/json" -d '{"refresh":"<refresh_token>"}' http://127.0.0.1:8000/api/token/refresh
+```
+- PowerShell
+```
+Invoke-RestMethod -Uri "http://127.0.0.1:8000/api/token/" -Method Post -Headers @{ "Content-Type" = "application/json" } -Body '{"refresh":"<refresh_token>"}'
+```
+### Response
+```
+    HTTP/1.1 201 OK
+    { access: <access_token> }
+```
+
+### Request
+`GET /api/user/` Obtener los datos del usuario
+- UNIX
+```
+curl -X PUT -H "Content-Type: application/json" -H "Authorization: Bearer <access_token>" http://127.0.0.1:8000/api/user/
+```
+- PowerShell
+```
+Invoke-RestMethod -Uri "http://127.0.0.1:8000/api/user/" -Method Put -Headers @{
+    "Content-Type" = "application/json"
+    "Authorization" = "Bearer <access_token>"
+}
+```
+### Response
+```
+    HTTP/1.1 201 OK
+    { access: <access_token> }
+```
+
+### Request
+`PUT/PATCH /api/user/` Cambiar los datos del usuario
+- UNIX
+```
+curl -X PUT -H "Content-Type: application/json" -d '{"username":"<username>","password":"password"}' http://127.0.0.1:8000/api/user/
+```
+- PowerShell
+```
+Invoke-RestMethod -Uri "http://127.0.0.1:8000/api/user/" -Method Put -Headers @{ "Content-Type" = "application/json" } -Body '{"username":"<username>","password":"password"}'
+```
+### Response
+```
+    HTTP/1.1 201 OK
+    { access: <access_token> }
+```
+
+### Request
+`DELETE /api/user/` Eliminar el usuario
+- UNIX
+```
+curl -X PUT -H "Content-Type: application/json" -H "Authorization: Bearer <access_token>" http://127.0.0.1:8000/api/user/
+```
+- PowerShell
+```
+Invoke-RestMethod -Uri "http://127.0.0.1:8000/api/user/" -Method Put -Headers @{
+    "Content-Type" = "application/json"
+    "Authorization" = "Bearer <access_token>"
+} -Body '{"username":"<username>","password":"password"}'
+```
+### Response
+```
+    HTTP/1.1 201 OK
+```
+
+- Tareas
+
+### Request
+`POST /api/task/` Crear un una tarea (requiere token)
+- UNIX
+```
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer <access_token>" -d '{"title":"test","description":"test"}' http://127.0.0.1:8000/api/task/
+```
+- PowerShell
+```
+Invoke-RestMethod -Uri "http://127.0.0.1:8000/api/task/" -Method Post -Headers @{
+    "Content-Type" = "application/json"
+    "Authorization" = "Bearer <access_token>"
+} -Body '{"title":"test","description":"test" }'
+```
+### Response
+```
+    HTTP/1.1 201 Created
+    {
+        "completed": false,
+        "description": "test",
+        "title": "test"
+    }
+```
+
+### Request
+`GET /api/task/` Obtener los datos de una tarea
+- UNIX
+```
+curl -X GET -H "Authorization: Bearer <access_token>" http://127.0.0.1:8000/api/task/<pk_task>
+```
+- PowerShell
+```
+Invoke-RestMethod -Uri "http://127.0.0.1:8000/api/task/<pk_task>" -Method Get -Headers @{
+    "Authorization" = "Bearer <access_token>"
+}
+```
+### Response
+```
+    HTTP/1.1 200 OK
+    {
+        "completed": false,
+        "description": "test",
+        "title": "test"
+    }
+```
+
+### Request
+`GET /api/task/` Obtener los datos de todas las tareas del usuario autenticado
+- UNIX
+```
+curl -X GET -H "Authorization: Bearer <access_token>" http://127.0.0.1:8000/api/token/
+```
+- PowerShell
+```
+Invoke-RestMethod -Uri "http://127.0.0.1:8000/api/task/<pk_task>" -Method Get -Headers @{
+    "Authorization" = "Bearer <access_token>"
+}
+```
+### Response
+```
+    HTTP/1.1 200 OK
+    [
+        {
+            "completed": true,
+            "description": "test",
+            "title": "test"
+        },
+        {
+            "completed": false,
+            "description": "test_modified",
+            "title": "test_modified"
+        }
+    ]
+```
+
+### Request
+`PUT/PATCH /api/task/` Modificar los datos de una tarea
+- UNIX
+```
+curl -X PUT -H "Content-Type: application/json" -H "Authorization: Bearer <access_token>" -d '{"title":"test_modified","description":"test_modified"}' http://127.0.0.1:8000/api/task/<pk_task>/
+```
+- PowerShell
+```
+Invoke-RestMethod -Uri "http://127.0.0.1:8000/api/task/<pk_task>/" -Method Put -Headers @{
+    "Authorization" = "Bearer <access_token>"
+    "Content-Type" = "application/json"
+} -Body '{"title":"test_modified","description":"test_modified" }'
+```
+### Response
+```
+    HTTP/1.1 200 OK
+    {
+        "completed": false,
+        "description": "test_modified",
+        "title": "test_modified"
+    }
+```
+
+### Request
+`PUT/PATCH /api/user/` Eliminar una tarea
+- UNIX
+```
+curl -X DELETE -H "Authorization: Bearer <access_token>" http://127.0.0.1:8000/api/task/<pk_task>/
+```
+- PowerShell
+```
+Invoke-RestMethod -Uri "http://127.0.0.1:8000/api/task/<pk_task>/" -Method Delete -Headers @{
+    "Authorization" = "Bearer <access_token>"
+}
+```
+### Response
+```
+    HTTP/1.1 204 No Content
+```
+
+### Request
+`PUT/PATCH /api/task/` Marcar una tarea como completa
+- UNIX
+```
+curl -X PUT -H "Authorization: Bearer <access_token>" http://127.0.0.1:8000/api/task/<pk_task>/complete
+```
+- PowerShell
+```
+Invoke-RestMethod -Uri "http://127.0.0.1:8000/api/task/<pk_task>/complete" -Method Put -Headers @{
+    "Authorization" = "Bearer <access_token>"
+}
+```
+### Response
+```
+    HTTP/1.1 200 OK
+    {
+        "completed": true,
+        "description": "test",
+        "title": "test"
+    }
+```
+
+### Request
+`GET /api/task/` Buscar una tarea por título o descripción
+- UNIX
+```
+curl -X GET -H "Authorization: Bearer <access_token>" http://127.0.0.1:8000/api/task?search=<texto_a_buscar>
+```
+- PowerShell
+```
+Invoke-RestMethod -Uri "http://127.0.0.1:8000/api/task?search=<texto_a_buscar>" -Method Get -Headers @{
+    "Authorization" = "Bearer <access_token>"
+}
+```
+### Response
+```
+    HTTP/1.1 200 OK
+    [
+        {
+            "completed": false,
+            "description": "test",
+            "title": "test"
+        },
+        {
+            "completed": true,
+            "description": "test2",
+            "title": "test2"
+        },
+    ]
+```
+
+### Request
+`GET /api/task/` Buscar una tarea por fecha y estado (completa o incompleta)
+- UNIX
+```
+curl -X GET -H "Authorization: Bearer <access_token>" http://127.0.0.1:8000/api/task?complete=(True|False)&created=<yyyy-mm-dd>
+```
+- PowerShell
+```
+Invoke-RestMethod -Uri "http://127.0.0.1:8000/api/task?complete=(True|False)&created=<yyyy-mm-dd>" -Method Get -Headers @{
+    "Authorization" = "Bearer <access_token>"
+}
+```
+### Response
+```
+    HTTP/1.1 200 OK
+    [
+        {
+            "completed": false,
+            "description": "test",
+            "title": "test"
+        },
+        {
+            "completed": true,
+            "description": "test2",
+            "title": "test2"
+        },
+    ]
+```
