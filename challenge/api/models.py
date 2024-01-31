@@ -1,7 +1,15 @@
 import logging
 
 from django.contrib.auth.models import AbstractUser
-from django.db import models
+from django.db.models import (
+    Model,
+    BooleanField,
+    TextField,
+    CharField,
+    ForeignKey,
+    DateField,
+    CASCADE
+)
 
 
 logger = logging.getLogger(__name__)
@@ -20,7 +28,7 @@ class User(AbstractUser):
         return f'Username: {self.username}'
 
 
-class Task(models.Model):
+class Task(Model):
     '''
         Entity/Model for the tasks
 
@@ -32,11 +40,11 @@ class Task(models.Model):
             created (datetime.datetime): Date and time of task creation.
     '''
 
-    completed = models.BooleanField(default=False)
-    description = models.TextField()
-    title = models.CharField(max_length=100)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    created = models.DateField(auto_now_add=True)
+    completed = BooleanField(default=False)
+    description = TextField()
+    title = CharField(max_length=100)
+    user = ForeignKey(User, on_delete=CASCADE)
+    created = DateField(auto_now_add=True)
 
     def __str__(self) -> str:
         return f'Title: {self.title}. {self.user.__str__()}'
