@@ -23,12 +23,14 @@ SECRET_KEY = getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    'drf_spectacular',
+    'drf_spectacular_sidecar',
     'django_filters',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -75,13 +77,13 @@ WSGI_APPLICATION = 'challenge.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": environ.get("SQL_ENGINE", "django.db.backends.sqlite3"),
-        "NAME": environ.get("SQL_DATABASE", path.join(BASE_DIR, "db.sqlite3")),
-        "USER": environ.get("SQL_USER", "user"),
-        "PASSWORD": environ.get("SQL_PASSWORD", "password"),
-        "HOST": environ.get("SQL_HOST", "localhost"),
-        "PORT": environ.get("SQL_PORT", "5432"),
+    'default': {
+        'ENGINE': environ.get('SQL_ENGINE', 'django.db.backends.sqlite3'),
+        'NAME': environ.get('SQL_DATABASE', path.join(BASE_DIR, 'db.sqlite3')),
+        'USER': environ.get('SQL_USER', 'user'),
+        'PASSWORD': environ.get('SQL_PASSWORD', 'password'),
+        'HOST': environ.get('SQL_HOST', 'localhost'),
+        'PORT': environ.get('SQL_PORT', '5432'),
     }
 }
 
@@ -161,7 +163,24 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
-    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema'
+}
+
+# Spectacular settings for swagger
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'api',
+    'DESCRIPTION': 'mdr-todo-challenge',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'SWAGGER_UI_DIST': 'SIDECAR',
+    'SWAGGER_UI_FAVICON_HREF': 'SIDECAR',
+    'REDOC_DIST': 'SIDECAR',
+    # Split components into request and response parts where appropriate
+    'COMPONENT_SPLIT_REQUEST': True,
+    # Adds 'blank' and 'null' enum choices where appropriate. disable on client generation issues
+    'ENUM_ADD_EXPLICIT_BLANK_NULL_CHOICE': False
 }
 
 # Default user model
