@@ -29,8 +29,8 @@
 - 4) Guarde el archivo y ciérrelo
 
 ## Ejecución
-- 1) Ingrese el comando "docker compose up --build" para construir el ambiente en el que se ejecutará el proyecto
-- 2) Ejecute con el comando "docker compose up" y ya podrá consumir la aplicación
+- 1) Ingrese el comando "docker compose up --build" para construir el ambiente del proyecto y ejecutarlo a la vez.
+- 2) Para cualquier momento próximo en el que quiera ejecutar el proyecto, ingrese el comando "docker compose up" y ya podrá consumir la aplicación, no es necesario volver a ejecutar "docker compose up --build".
 
 ## Documentación
 Una vez levantado el proyecto, puede relevar todos los endpoints disponibles por la aplicación ingresando a "http://127.0.0.1:8000/api/schema/redoc/".
@@ -38,8 +38,7 @@ Además, puede probar cada uno de los endpoint ingresando a "http://127.0.0.1:80
 Por útlimo, si desea documentar y probar cada endpoint de manera personalizada en aplicaciones externas, ingrese a "http://127.0.0.1:8000/api/schema/" para exportar las configuraciones a un archivo "api.yaml" que contendrá la colección de endpoints.
 
 ## Utilización / Pruebas
-Una vez ejecutado el proyecto, puede realizar peticiones HTTP a los siguientes enlaces para cada una de las acciones indicadas.
-Lo que verá a continuación son comandos en terminales UNIX y/o PowerShell que generarán esas solicitudes HTTP y puede ingresarlos en una terminal para probarlos.
+Si bien se dispone la documentación con la posibilidad de probar cada endpoint a traves de http://127.0.0.1:8000/api/schema/swagger-ui (el método recomendado), con el proyecto andando puede realizar peticiones HTTP a traves de una terminal PowerShell o UNIX a los siguientes enlaces para cada una de las acciones indicadas a continuación:
 
 ### Request
 `POST /api/user/` Crear un usuario
