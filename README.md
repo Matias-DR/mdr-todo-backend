@@ -8,7 +8,7 @@
 ## Instalación
 - 1) Abra una terminal e ingrese "mkdir <nombre_carpeta>" (para terminales en UNIX y PowerShell en Windows >=10) para crear la carpeta del proyecto
 - 2) Párese sobre la carpeta creada con "cd <nombre_carpeta>" donde instalará el proyecto
-- 3) Clone el repositorio ingresando "git clone mdr-todo-challenge https://github.com/Matias-DR/mdr-todo-challenge"
+- 3) Clone el repositorio ingresando "git clone https://github.com/Matias-DR/mdr-todo-challenge"
 - 4) Párese sobre el proyecto con "cd ./mdr-todo-challenge/challenge"
 
 ## Configuración
