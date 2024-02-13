@@ -50,6 +50,27 @@ class UserViewSet(ModelViewSet):
             return self.queryset.filter(pk=self.request.user.pk)
         return super().get_queryset()
 
+    def create(self, request, *args, **kwargs):
+        '''
+            Adapt data before create the user.
+            Compares the password whit de password confirmation and executes
+            the super create method.
+        '''
+
+        logger.info(
+            f'UserViewSet create -> User {request.data["username"]} created.'
+        )
+        logger.info(f'ESTO LLEGA COMO USUARIO A LA VIEW {request.data}')
+        adapted_data = {
+            'username': request.data['username'] if 'username' in request.data else request.data['userName'] if 'userName' in request.data else request.data['user_name'],
+            'password': request.data['password'],
+            'password_confirmation': request.data['password_confirmation'] if 'password_confirmation' in request.data else request.data['passwordConfirmation']
+        }
+        request.data.update(adapted_data)
+        if request.data['password'] != request.data['password_confirmation']:
+            return Response({'password': 'Passwords do not match.'}, 400)
+        return super().create(request, *args, **kwargs)
+
 
 class TaskViewSet(ModelViewSet):
     '''
@@ -93,7 +114,8 @@ class TaskViewSet(ModelViewSet):
             Sets the user of the task to the user who created it.
         '''
 
-        logger.info(f'TaskViewSet perform_create -> Task created by {self.request.user.username}')
+        logger.info(
+            f'TaskViewSet perform_create -> Task created by {self.request.user.username}')
         serializer.save(user=self.request.user)
 
     @action(
@@ -113,7 +135,8 @@ class TaskViewSet(ModelViewSet):
             It receive the task id, marks as complete and returns the task data.
         '''
 
-        logger.info(f'TaskViewSet complete -> Task {pk} from user {self.request.user.username} completed')
+        logger.info(
+            f'TaskViewSet complete -> Task {pk} from user {self.request.user.username} completed')
         task = self.get_object()
         serializer = self.get_serializer(task)
         task.complete()
@@ -136,7 +159,8 @@ class TaskViewSet(ModelViewSet):
             It receive the task id, marks as complete and returns the task data.
         '''
 
-        logger.info(f'TaskViewSet incomplete -> Task {pk} from user {self.request.user.username} incomplete')
+        logger.info(
+            f'TaskViewSet incomplete -> Task {pk} from user {self.request.user.username} incomplete')
         task = self.get_object()
         serializer = self.get_serializer(task)
         task.incomplete()
