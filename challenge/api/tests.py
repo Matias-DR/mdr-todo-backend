@@ -292,9 +292,9 @@ class TaskViewTestCase(APITestCase):
             format='json',
             HTTP_AUTHORIZATION=f'Bearer {self.token}'
         )
-        # Complete the second task
+        # Inomplete the second task
         self.client.put(
-            '/api/task/2/complete/',
+            '/api/task/2/incomplete/',
             format='json',
             HTTP_AUTHORIZATION=f'Bearer {self.token}'
         )
@@ -306,15 +306,11 @@ class TaskViewTestCase(APITestCase):
             filter: str | None = None,
             print_url: bool = False
         ):
-            url = f'/api/task{
-                '/' if search is None and filter is None else '?'
-            }{
-                f'{pk}/' if pk is not None else ''
-            }{
-                f'search={search}' if search else ''
-            }{
-                f'{filter}' if filter is not None else ''
-            }'
+            a = '/' if search is None and filter is None else '?'
+            b = f'{pk}/' if pk is not None else ''
+            c = f'search={search}' if search else ''
+            d = filter if filter is not None else ''
+            url = f'/api/task{a}{b}{c}{d}'
             if print_url:
                 print(url)
             return self.client.get(
@@ -324,7 +320,7 @@ class TaskViewTestCase(APITestCase):
             )
 
         def one():
-            result = response(pk=1)
+            result = response(pk=2)
             self.assertEqual(result.status_code, 200)
 
         def all():
