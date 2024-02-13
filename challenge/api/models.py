@@ -22,10 +22,11 @@ class User(AbstractUser):
         Attributes:
             password (str): User's password.
             username (str): User's username.
+            email (str): User's email.
     '''
 
     def __str__(self) -> str:
-        return f'Username: {self.username}'
+        return f'Username: {self.username}, Email: {self.email}'
 
 
 class Task(Model):
