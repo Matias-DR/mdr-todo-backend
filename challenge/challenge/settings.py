@@ -3,8 +3,9 @@ from os import (
     environ,
     path
 )
-from pathlib import Path
+from datetime import timedelta
 from dotenv import load_dotenv
+from pathlib import Path
 
 
 # Load environment variables from .env file
@@ -186,3 +187,10 @@ SPECTACULAR_SETTINGS = {
 # Default user model
 
 AUTH_USER_MODEL = 'api.User'
+
+# JWT settings
+
+SIMPLE_JWT = {
+    # It will work instead of the default serializer(TokenObtainPairSerializer).
+    'TOKEN_OBTAIN_SERIALIZER': 'api.serializers.TokenSerializer',
+}
