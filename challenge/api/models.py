@@ -2,82 +2,111 @@ import logging
 
 from django.contrib.auth.models import AbstractUser
 from django.db.models import (
-    Model,
+    CASCADE,
     BooleanField,
-    TextField,
     CharField,
+    DateTimeField,
     ForeignKey,
-    DateField,
-    CASCADE
+    Model,
+    TextField,
+    EmailField,
 )
-
+from django.core.validators import validate_email, RegexValidator
 
 logger = logging.getLogger(__name__)
 
 
 class User(AbstractUser):
-    '''
-        Entity/Model for the users
+    """
+    Entity/Model for the users
 
-        Attributes:
-            password (str): User's password.
-            username (str): User's username.
-            email (str): User's email.
-    '''
+    Attributes:
+        password (str): User's password.
+        username (str): User's username.
+        email (str): User's email.
+    """
+
+    username = CharField(
+        unique=True,
+        db_index=True,
+        max_length=25,
+        error_messages={
+            "unique": "Nombre de usuario en uso.",
+            "invalid": "Nombre de usuario inválido.",
+            "max_length": "Nombre de usuario demasiado largo.",
+        },
+        editable=False,
+    )
+    email = EmailField(
+        unique=True,
+        db_index=True,
+        validators=[validate_email],
+        error_messages={"unique": "Email en uso.", "invalid": "Email inválido."},
+        editable=True,
+    )
+    password = CharField(
+        validators=[RegexValidator(regex=r"^(?=.*.)(?=.*\d).{8,}$")],
+        error_messages={"invalid": "Contraseña inválida."},
+        editable=True,
+    )
+
+    def get_email(self) -> str:
+        """
+        Returns the user's email.
+
+        Returns:
+            str: User's email.
+        """
+
+        return self.email
 
     def __str__(self) -> str:
-        return f'Username: {self.username}, Email: {self.email}'
+        return f"Username: {self.username}, Email: {self.email}"
 
 
 class Task(Model):
-    '''
-        Entity/Model for the tasks
+    """
+    Entity/Model for the tasks
 
-        Attributes:
-            completed (bool): Determines if the user marked the task as completed.
-            description (str): User-entered descriptive colloquial text for the task.
-            title (str): Title of the task.
-            user (django.contrib.auth.models.User): Task owner.
-            created (datetime.datetime): Date and time of task creation.
-    '''
+    Attributes:
+        completed (bool): Determines if the user marked the task as completed.
+        description (str): User-entered descriptive colloquial text for the task.
+        title (str): Title of the task.
+        user (django.contrib.auth.models.User): Task owner.
+        created (datetime.datetime): Date and time of task creation.
+    """
 
     completed = BooleanField(default=False)
     description = TextField()
     title = CharField(max_length=100)
     user = ForeignKey(User, on_delete=CASCADE)
-    created = DateField(auto_now_add=True)
+    created = DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:
-        return f'Title: {self.title}. {self.user.__str__()}'
+        return f"Title: {self.title}. {self.user.__str__()}"
 
-    def complete(
-        self,
-        save: bool = True
-    ) -> None:
-        '''
-            Marks the task as complete.
+    def complete(self, save: bool = True) -> None:
+        """
+        Marks the task as complete.
 
-            Args:
-                save (bool): Determines if the task is saved in the database.
-        '''
+        Args:
+            save (bool): Determines if the task is saved in the database.
+        """
 
-        logger.info(f'Task complete -> Task {self.pk} completed.')
+        logger.info(f"Task complete -> Task {self.pk} completed.")
         self.completed = True
-        if (save):
+        if save:
             self.save()
 
-    def incomplete(
-        self,
-        save: bool = True
-    ) -> None:
-        '''
-            Marks the task as incomplete.
+    def incomplete(self, save: bool = True) -> None:
+        """
+        Marks the task as incomplete.
 
-            Args:
-                save (bool): Determines if the task is saved in the database.
-        '''
+        Args:
+            save (bool): Determines if the task is saved in the database.
+        """
 
-        logger.info(f'Task incomplete -> Task {self.pk} incomplete.')
+        logger.info(f"Task incomplete -> Task {self.pk} incomplete.")
         self.completed = False
-        if (save):
+        if save:
             self.save()
