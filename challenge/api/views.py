@@ -1,5 +1,6 @@
 import logging
 
+from django.contrib.auth.hashers import check_password
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
 from rest_framework.filters import OrderingFilter, SearchFilter
@@ -51,6 +52,7 @@ class UserViewSet(ModelViewSet):
         the super create method.
         """
 
+        logger.info(f"ESTO LLEGA {request.data}")
         logger.info(f'UserViewSet create -> User {request.data["username"]} created.')
         adapted_data = {
             "username": request.data["username"]
@@ -64,6 +66,7 @@ class UserViewSet(ModelViewSet):
             else request.data["passwordConfirmation"],
         }
         request.data.update(adapted_data)
+        logger.info(f"Y ESTO QUEDA {request.data}")
         if request.data["password"] != request.data["password_confirmation"]:
             return Response({"password": "Passwords do not match."}, 400)
         return super().create(request, *args, **kwargs)
@@ -81,16 +84,27 @@ class UserViewSet(ModelViewSet):
             "email": request.data.get("email")
             or request.data.get("new_email")
             or request.data.get("newEmail"),
-            "password": request.data.get("password")
-            or request.data.get("new_password")
+            "password": request.data.get("new_password")
             or request.data.get("newPassword"),
         }
+        password = request.data.get("current_password") or request.data.get("currentPassword")
         password_confirmation = request.data.get(
             "new_password_confirmation"
         ) or request.data.get("newPasswordConfirmation")
-        if adapted_data["password"] == password_confirmation:
-            request.data.update(adapted_data)
-            return super().update(request, *args, **kwargs)
+
+        # If the new password is the same as the new password confirmation
+        if adapted_data.get("password") == password_confirmation:
+            current_user = self.queryset.filter(email=adapted_data.get("email")).first()
+            logger.info(
+                f"PASSWORD {password}\nCURRENT_PASSWORD {current_user.get_password()}\nCHECK_PASSWORD {current_user.check_password(password)}"
+            )
+
+            # If password is the same as the current password
+            if current_user.check_password(password):
+                request.data.update(adapted_data)
+                return super().update(request, *args, **kwargs)
+            else:
+                return Response({"password": "Contraseña incorrecta"}, 400)
         else:
             return Response({"password": "Las contraseñas no coinciden."}, 400)
 
