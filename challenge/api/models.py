@@ -34,31 +34,34 @@ class User(AbstractUser):
             "unique": "Nombre de usuario en uso.",
             "invalid": "Nombre de usuario inválido.",
             "max_length": "Nombre de usuario demasiado largo.",
-        },
-        editable=False,
+        }
     )
     email = EmailField(
         unique=True,
         db_index=True,
         validators=[validate_email],
-        error_messages={"unique": "Email en uso.", "invalid": "Email inválido."},
-        editable=True,
+        error_messages={"unique": "Email en uso.", "invalid": "Email inválido."}
     )
     password = CharField(
         validators=[RegexValidator(regex=r"^(?=.*.)(?=.*\d).{8,}$")],
-        error_messages={"invalid": "Contraseña inválida."},
-        editable=True,
+        error_messages={"invalid": "Contraseña inválida."}
     )
 
     def get_email(self) -> str:
         """
         Returns the user's email.
-
-        Returns:
-            str: User's email.
         """
 
+        logger.info("UserModel get_email.")
         return self.email
+
+    def get_password(self) -> str:
+        """
+        Returns the user's hashed password
+        """
+
+        logger.info("UserModel get_password.")
+        return self.password
 
     def __str__(self) -> str:
         return f"Username: {self.username}, Email: {self.email}"
