@@ -26,7 +26,7 @@ class UserSerializer(ModelSerializer):
         """
 
         logger.info(
-            f'UserSerializer create -> User {validated_data["username"]} created.'
+            f'UserSerializer create -> User {validated_data["username"]}.'
         )
         validated_data["password"] = make_password(validated_data["password"])
         return super().create(validated_data)
@@ -36,11 +36,12 @@ class UserSerializer(ModelSerializer):
         Hash the password.
 
         Args:
+            instance (api.models.User): User instance to update.
             validated_data (dict): Dictionary with the validated data.
         """
 
         logger.info(
-            f'UserSerializer update -> User {validated_data["email"]} updated.'
+            f'UserSerializer update -> User {validated_data["email"]}.'
         )
         validated_data["password"] = make_password(validated_data["password"])
         return super().update(instance, validated_data)

@@ -1,18 +1,34 @@
 import logging
 
-from django.contrib.auth.hashers import check_password
+from django.contrib.auth.hashers import make_password
+from django.core.mail import EmailMessage
+from django.core.validators import validate_email
+from django.utils.encoding import force_bytes, force_text
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django_filters.rest_framework import DjangoFilterBackend
+from dotenv import load_dotenv
 from rest_framework.decorators import action
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.status import (
+    HTTP_200_OK,
+    HTTP_204_NO_CONTENT,
+    HTTP_400_BAD_REQUEST,
+    HTTP_404_NOT_FOUND,
+)
+from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
+
+from challenge.settings import FRONT_HOST
 
 from .filters import TaskFilter
 from .models import Task, User
 from .serializers import TaskSerializer, UserSerializer
+from .utils import password_reset_token_generator
 
 logger = logging.getLogger(__name__)
+load_dotenv()
 
 
 class UserViewSet(ModelViewSet):
@@ -52,8 +68,7 @@ class UserViewSet(ModelViewSet):
         the super create method.
         """
 
-        logger.info(f"ESTO LLEGA {request.data}")
-        logger.info(f'UserViewSet create -> User {request.data["username"]} created.')
+        logger.info(f'UserViewSet create -> User {request.data["username"]}.')
         adapted_data = {
             "username": request.data["username"]
             if "username" in request.data
@@ -66,9 +81,10 @@ class UserViewSet(ModelViewSet):
             else request.data["passwordConfirmation"],
         }
         request.data.update(adapted_data)
-        logger.info(f"Y ESTO QUEDA {request.data}")
         if request.data["password"] != request.data["password_confirmation"]:
-            return Response({"password": "Passwords do not match."}, 400)
+            return Response(
+                {"password": "Las contraseñas no coinciden."}, HTTP_400_BAD_REQUEST
+            )
         return super().create(request, *args, **kwargs)
 
     def update(self, request, *args, **kwargs):
@@ -79,7 +95,7 @@ class UserViewSet(ModelViewSet):
         si hay nueva contrsaseña -> compararla con su confirmación
         """
 
-        logger.info(f'UserViewSet update -> User {request.data["username"]} updated.')
+        logger.info(f'UserViewSet update -> {request.data["username"]}.')
         adapted_data = {
             "email": request.data.get("email")
             or request.data.get("new_email")
@@ -87,7 +103,9 @@ class UserViewSet(ModelViewSet):
             "password": request.data.get("new_password")
             or request.data.get("newPassword"),
         }
-        password = request.data.get("current_password") or request.data.get("currentPassword")
+        password = request.data.get("current_password") or request.data.get(
+            "currentPassword"
+        )
         password_confirmation = request.data.get(
             "new_password_confirmation"
         ) or request.data.get("newPasswordConfirmation")
@@ -95,18 +113,19 @@ class UserViewSet(ModelViewSet):
         # If the new password is the same as the new password confirmation
         if adapted_data.get("password") == password_confirmation:
             current_user = self.queryset.filter(email=adapted_data.get("email")).first()
-            logger.info(
-                f"PASSWORD {password}\nCURRENT_PASSWORD {current_user.get_password()}\nCHECK_PASSWORD {current_user.check_password(password)}"
-            )
 
             # If password is the same as the current password
             if current_user.check_password(password):
                 request.data.update(adapted_data)
                 return super().update(request, *args, **kwargs)
             else:
-                return Response({"password": "Contraseña incorrecta"}, 400)
+                return Response(
+                    {"password": "Contraseña incorrecta"}, HTTP_400_BAD_REQUEST
+                )
         else:
-            return Response({"password": "Las contraseñas no coinciden."}, 400)
+            return Response(
+                {"password": "Las contraseñas no coinciden."}, HTTP_400_BAD_REQUEST
+            )
 
 
 class TaskViewSet(ModelViewSet):
@@ -177,3 +196,110 @@ class TaskViewSet(ModelViewSet):
         serializer = self.get_serializer(task)
         task.incomplete()
         return Response(serializer.data, 200)
+
+
+class ResetPasswordView(APIView):
+    """
+    View for reset password. It allows to send an email to the user with the reset
+    password link.
+    """
+
+    def get(self, request: dict, b64pk: bytes | str, token: str) -> Response:
+        """
+        Verifies that the token is valid and has not been used.
+        """
+        try:
+            pk = force_text(urlsafe_base64_decode(b64pk))
+            user = User.objects.get(pk=pk)
+            if not password_reset_token_generator.check_token(user, token):
+                # User has already used the token.
+                return Response(
+                    status=HTTP_400_BAD_REQUEST,
+                    data={"detail": "El enlace expiró o ya se utilizó."},
+                )
+        except User.DoesNotExist:
+            return Response(status=HTTP_404_NOT_FOUND)
+
+        logger.info(f"ResetPasswordView get -> Token for {user.username} is valid.")
+        return Response(status=HTTP_200_OK)
+
+    def post(self, request: dict) -> Response:
+        """
+        Sends an email with the reset password link to the email address provided.
+        """
+
+        email = request.data["email"]
+        try:
+            validate_email(email)
+        except Exception:
+            return Response(status=HTTP_400_BAD_REQUEST, data="Email inválido")
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response(
+                status=HTTP_404_NOT_FOUND,
+                data={"detail": "Email inexistente."},
+            )
+
+        b64pk = urlsafe_base64_encode(force_bytes(user.pk))
+        token = password_reset_token_generator.make_token(user.pk)
+        link = f"{FRONT_HOST}/sign/reset-password/{b64pk}/{token}"
+        subject = "Restablezca su contraseña de ToDo"
+        body = (
+            f"Esto es un email para la recuperación de su contraseña.\n"
+            f"Para restablecerla, ingrese en el siguiente enlace:\n"
+            f"{link}\n\n"
+            f"Saludos"
+            f"ToDo"
+        )
+
+        email = EmailMessage(
+            subject,
+            body,
+            to=[user.email],
+        )
+        email.send()
+
+        logger.info(f"ResetPasswordView post -> Email {email} sent.")
+        return Response(status=HTTP_204_NO_CONTENT)
+
+    def patch(self, request, b64pk: bytes | str, token: str) -> Response:
+        """
+        Verifies that the token is valid and has not been used.
+        If the token is valid, it updates the user's password.
+        """
+
+        try:
+            pk = force_text(urlsafe_base64_decode(b64pk))
+            user = User.objects.get(pk=pk)
+            if not password_reset_token_generator.check_token(user, token):
+                # User has already used the token.
+                return Response(
+                    status=HTTP_400_BAD_REQUEST,
+                    data={"detail": "El enlace expiró o ya se utilizó."},
+                )
+            else:
+                new_password = (
+                    request.data["new_password"] or request.data["newPassword"]
+                )
+                new_password_confirmation = (
+                    request.data["new_password_confirmation"]
+                    or request.data["newPasswordConfirmation"]
+                )
+                if new_password != new_password_confirmation:
+                    return Response(
+                        status=HTTP_400_BAD_REQUEST,
+                        data={"detail": "Las contraseñas no coinciden."},
+                    )
+                new_password = make_password(new_password)
+                user.set_password(new_password)
+                user.save()
+        except User.DoesNotExist:
+            return Response(
+                status=HTTP_404_NOT_FOUND, data={"detail": "Usuario inexistente."}
+            )
+
+        logger.info(
+            f"ResetPasswordView patch -> Password for {user.username} has reset."
+        )
+        return Response(status=HTTP_204_NO_CONTENT)

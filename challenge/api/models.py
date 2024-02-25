@@ -52,7 +52,7 @@ class User(AbstractUser):
         Returns the user's email.
         """
 
-        logger.info("UserModel get_email.")
+        logger.info(f"UserModel get_email -> User {self.username}")
         return self.email
 
     def get_password(self) -> str:
@@ -60,7 +60,7 @@ class User(AbstractUser):
         Returns the user's hashed password
         """
 
-        logger.info("UserModel get_password.")
+        logger.info(f"UserModel get_password -> User {self.username}")
         return self.password
 
     def __str__(self) -> str:
