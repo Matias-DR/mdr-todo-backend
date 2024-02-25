@@ -3,7 +3,7 @@ import logging
 from django.contrib.auth.hashers import make_password
 from django.core.mail import EmailMessage
 from django.core.validators import validate_email
-from django.utils.encoding import force_bytes, force_text
+from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django_filters.rest_framework import DjangoFilterBackend
 from dotenv import load_dotenv
@@ -209,7 +209,7 @@ class ResetPasswordView(APIView):
         Verifies that the token is valid and has not been used.
         """
         try:
-            pk = force_text(urlsafe_base64_decode(b64pk))
+            pk = force_str(urlsafe_base64_decode(b64pk))
             user = User.objects.get(pk=pk)
             if not password_reset_token_generator.check_token(user, token):
                 # User has already used the token.
@@ -270,7 +270,7 @@ class ResetPasswordView(APIView):
         """
 
         try:
-            pk = force_text(urlsafe_base64_decode(b64pk))
+            pk = force_str(urlsafe_base64_decode(b64pk))
             user = User.objects.get(pk=pk)
             if not password_reset_token_generator.check_token(user, token):
                 # User has already used the token.
