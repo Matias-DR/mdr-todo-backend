@@ -209,6 +209,7 @@ class ResetPasswordView(APIView):
     password link.
     """
     permission_classes = [AllowAny]
+    authentication_classes = []
 
     def get(self, request: dict, b64pk: bytes | str, token: str) -> Response:
         """
