@@ -20,7 +20,12 @@ from rest_framework.status import (
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
-from challenge.settings import FRONT_HOST
+from challenge.settings import (
+    FRONT_HOST,
+    EMAIL_HOST_USER,
+    EMAIL_HOST_PASSWORD,
+    DEFAULT_FROM_EMAIL,
+)
 
 from .filters import TaskFilter
 from .models import Task, User
@@ -253,7 +258,14 @@ class ResetPasswordView(APIView):
             f"ToDo"
         )
 
-        send_mail(subject, body, recipient_list=[user.email])
+        send_mail(
+            subject,
+            body,
+            recipient_list=[user.email],
+            from_email=DEFAULT_FROM_EMAIL,
+            auth_user=EMAIL_HOST_USER,
+            auth_password=EMAIL_HOST_PASSWORD,
+        )
 
         # email = EmailMessage(
         #     subject,
