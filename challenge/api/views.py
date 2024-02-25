@@ -9,7 +9,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from dotenv import load_dotenv
 from rest_framework.decorators import action
 from rest_framework.filters import OrderingFilter, SearchFilter
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.status import (
     HTTP_200_OK,
@@ -208,6 +208,7 @@ class ResetPasswordView(APIView):
     View for reset password. It allows to send an email to the user with the reset
     password link.
     """
+    permission_classes = [AllowAny]
 
     def get(self, request: dict, b64pk: bytes | str, token: str) -> Response:
         """
@@ -248,7 +249,7 @@ class ResetPasswordView(APIView):
 
         b64pk = urlsafe_base64_encode(force_bytes(user.pk))
         token = password_reset_token_generator.make_token(user)
-        link = f"{FRONT_HOST}/sign/reset-password/{b64pk}/{token}"
+        link = f"{FRONT_HOST}/reset-password/{b64pk}/{token}"
         subject = "Restablezca su contraseña de ToDo"
         body = (
             f"Esto es un email para la recuperación de su contraseña.\n"
