@@ -1,7 +1,7 @@
 import logging
 
 from django.contrib.auth.hashers import make_password
-from django.core.mail import EmailMessage
+from django.core.mail import send_mail
 from django.core.validators import validate_email
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
@@ -253,12 +253,14 @@ class ResetPasswordView(APIView):
             f"ToDo"
         )
 
-        email = EmailMessage(
-            subject,
-            body,
-            to=[user.email],
-        )
-        email.send()
+        send_mail(subject, body, recipient_list=[user.email])
+
+        # email = EmailMessage(
+        #     subject,
+        #     body,
+        #     to=[user.email],
+        # )
+        # email.send()
 
         logger.info(f"ResetPasswordView post -> Email {email} sent.")
         return Response(status=HTTP_204_NO_CONTENT)
