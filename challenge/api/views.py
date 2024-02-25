@@ -254,8 +254,7 @@ class ResetPasswordView(APIView):
             f"Esto es un email para la recuperación de su contraseña.\n"
             f"Para restablecerla, ingrese en el siguiente enlace:\n"
             f"{link}\n\n"
-            f"Saludos"
-            f"ToDo"
+            f"Saludos\nToDo"
         )
 
         send_mail(
