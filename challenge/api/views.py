@@ -242,7 +242,7 @@ class ResetPasswordView(APIView):
             )
 
         b64pk = urlsafe_base64_encode(force_bytes(user.pk))
-        token = password_reset_token_generator.make_token(user.pk)
+        token = password_reset_token_generator.make_token(user)
         link = f"{FRONT_HOST}/sign/reset-password/{b64pk}/{token}"
         subject = "Restablezca su contraseña de ToDo"
         body = (
