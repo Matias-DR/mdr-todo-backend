@@ -1,6 +1,5 @@
 import logging
 
-from django.contrib.auth.hashers import make_password
 from django.core.mail import send_mail
 from django.core.validators import validate_email
 from django.utils.encoding import force_bytes, force_str
