@@ -235,7 +235,7 @@ class ResetPasswordView(APIView):
         Sends an email with the reset password link to the email address provided.
         """
 
-        email = request.data["email"]
+        email = request.data.get("email")
         try:
             validate_email(email)
         except Exception:
@@ -295,11 +295,11 @@ class ResetPasswordView(APIView):
                 )
             else:
                 new_password = (
-                    request.data["new_password"] or request.data["newPassword"]
+                    request.data.get("new_password") or request.data.get("newPassword")
                 )
                 new_password_confirmation = (
-                    request.data["new_password_confirmation"]
-                    or request.data["newPasswordConfirmation"]
+                    request.data.get("new_password_confirmation")
+                    or request.data.get("newPasswordConfirmation")
                 )
                 if new_password != new_password_confirmation:
                     return Response(
