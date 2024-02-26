@@ -306,9 +306,6 @@ class ResetPasswordView(APIView):
                         status=HTTP_400_BAD_REQUEST,
                         data={"detail": "Las contraseñas no coinciden."},
                     )
-                logger.info(f'\n\nESTO QUEDA ANTES DE HASHEAR {new_password}')
-                new_password = make_password(new_password)
-                logger.info(f'ESTO QUEDA ANTES DE HASHEAR {new_password}\n\n')
                 user.set_password(new_password)
                 user.save()
         except User.DoesNotExist:
