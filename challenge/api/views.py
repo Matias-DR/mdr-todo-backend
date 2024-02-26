@@ -268,13 +268,6 @@ class ResetPasswordView(APIView):
             auth_password=EMAIL_HOST_PASSWORD,
         )
 
-        # email = EmailMessage(
-        #     subject,
-        #     body,
-        #     to=[user.email],
-        # )
-        # email.send()
-
         logger.info(f"ResetPasswordView post -> Email {email} sent.")
         return Response(status=HTTP_204_NO_CONTENT)
 
